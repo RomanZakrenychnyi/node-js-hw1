@@ -3,7 +3,6 @@ const path = require("path");
 const { nanoid } = require("nanoid");
 
 const contactsPath = path.join(__dirname, "db", "contacts.json");
-// const contactsPath = path.resolve("./db/contacts.json");
 
 const listContacts = async () => {
   try {
@@ -20,19 +19,22 @@ const getContactById = async (contactId) => {
     const data = await listContacts();
     const contacts = data.find((contact) => contact.id === contactId);
     await fs.writeFile(contactsPath, JSON.stringify(contacts));
-    return contacts || null;
+    return contacts;
   } catch (error) {
     console.log(error);
   }
 };
 
 const removeContact = async (contactId) => {
-  const data = await listContacts();
-
-  const newContacts = data.filter((contact) => contact.id !== contactId);
-
-  await fs.writeFile(contactsPath, JSON.stringify(newContacts));
-  return newContacts;
+  try {
+    const data = await listContacts();
+    const newContacts = data.filter((contact) => contact.id !== contactId);
+    fs.writeFile(contactsPath, JSON.stringify(listWithoutContact));
+    console.log(`contact removed`);
+    return newContacts;
+  } catch (error) {
+    console.log("can't remove contact");
+  }
 };
 
 const addContact = async (name, email, phone) => {
@@ -47,7 +49,7 @@ const addContact = async (name, email, phone) => {
 
     data.push(newContacts);
 
-    await fs.writeFile(contactsPath, JSON.stringify(data, null, 2));
+    await fs.writeFile(contactsPath, JSON.stringify(data));
     return newContacts;
   } catch (error) {
     console.log(error);
